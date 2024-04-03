@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+	http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd">
+
+  <flow name="WorkdayProfileChangeNotificationFlow" doc:id="b2330d07-be8e-438f-8445-03b0c4be44d5">
+    <salesforce:query doc:name="Query Workday Profile Changes" doc:id="e9e5303c-ec31-43ae-b95e-f7d98b1ceb74" config-ref="Salesforce_Config" target="workdayProfiles">
+      <salesforce:salesforce-query>
+        <![CDATA[SELECT Id, Name, Team__c, Profile_Change_Date__c FROM Workday_Profile__c WHERE Profile_Change_Date__c = TODAY]]>
+      </salesforce:salesforce-query>
+    </salesforce:query>
+    <foreach doc:name="For Each Workday Profile Change" doc:id="d501feaf-8735-4ad0-bb52-8a09cc93c09b" collection="#[vars.workdayProfiles]">
+      <set-variable value="#[payload.Team__c]" doc:name="Set Team" doc:id="10b24eeb-4666-4325-a48c-98bfe3504f99" variableName="team" />
+      <flow-ref doc:name="Notify Team Channel" doc:id="68cc7b7c-5f54-47b1-88b2-9dcc459dbc90" name="notify-team-channel" />
+    </foreach>
+  </flow>
+</mule>
